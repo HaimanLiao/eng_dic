@@ -5,6 +5,8 @@
 
 int linear_file_init(linear_file *file_hd)
 {
+	if(file_hd->fd != -1)return -1;	
+
 	if((file_hd->head_size < 8) || (file_hd->head_size > 24))
 	{
 		printf("Illegal Head Size\n");
@@ -58,20 +60,24 @@ int linear_file_init(linear_file *file_hd)
 	}
 }
 
-int linear_file_read(const linear_file *file_hd, int index, char *buf, int num)//char * should be void *
+int linear_file_read(const linear_file *file_hd, unsigned int index, char *buf, unsigned int num)//char * should be void *
 {
+	int ret = 0;
+	
 	if(file_hd->fd == -1)return -1;
 	if(num > (file_hd->file_real_size))return -1;
 	if(index >= (file_hd->file_real_size))return -1;
 
 	off_t new_offset = file_hd->head_size + index * (file_hd->element_size);
 	if((lseek(file_hd->fd, new_offset, SEEK_SET)) == -1)return -1;
-	if((read(file_hd->fd, buf, num * (file_hd->element_size))) == -1)return -1;//Don't care if element is deleted or not
+	ret = read(file_hd->fd, buf, num * (file_hd->element_size));		//Don't care if element is deleted or not
 
-	return 0;
+	if(ret == -1)return -1;					//read error
+	else if((ret % (file_hd->element_size)) != 0)return -1;	//file format corrupts
+	return ret;						//return the number of bytes that actually read not the number of elements
 }
 
-int linear_file_delete(linear_file *file_hd, int index)
+int linear_file_delete(linear_file *file_hd, unsigned int index)
 {
 	if(file_hd->fd == -1)return -1;
 	if(file_hd->file_size == 0)return -1;

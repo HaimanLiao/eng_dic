@@ -17,8 +17,8 @@ typedef struct linear_file{
 
 
 int linear_file_init(linear_file *file_hd);
-int linear_file_read(const linear_file *file_hd, int index, char *buf, int num);
-int linear_file_delete(linear_file *file_hd, int index);
+int linear_file_read(const linear_file *file_hd, unsigned int index, char *buf, unsigned int num);
+int linear_file_delete(linear_file *file_hd, unsigned int index);
 int linear_file_add(linear_file *file_hd, const char *buf);
 int linear_file_clean(linear_file *file_hd);
 
