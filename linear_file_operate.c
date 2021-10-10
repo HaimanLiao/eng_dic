@@ -39,7 +39,7 @@ int linear_file_init(linear_file *file_hd)
 		file_hd->file_size = file_hd->file_real_size;
 
 		printf("%s creates successfully\n", file_hd->file_name);
-		return 0;
+		return OK;
 	}
 	else
 	{
@@ -56,11 +56,19 @@ int linear_file_init(linear_file *file_hd)
 		file_hd->file_size = file_hd->file_real_size;
 
 		printf("%s open successfully\n", file_hd->file_name);
-		return 0;
+		return OK;
 	}
 }
 
-int linear_file_read(const linear_file *file_hd, unsigned int index, char *buf, unsigned int num)//char * should be void *
+int linear_file_get_size(linear_file *file_hd, uint32_t flag)
+{
+	if(file_hd->fd == -1)return -1;
+
+	if(flag == 0)return (file_hd->file_size);
+	else return (file_hd->file_real_size);
+}
+
+int linear_file_read(const linear_file *file_hd, uint32_t index, char *buf, uint32_t num)//char * should be void *
 {
 	int ret = 0;
 	
@@ -77,7 +85,7 @@ int linear_file_read(const linear_file *file_hd, unsigned int index, char *buf, 
 	return ret;						//return the number of bytes that actually read not the number of elements
 }
 
-int linear_file_delete(linear_file *file_hd, unsigned int index)
+int linear_file_delete(linear_file *file_hd, uint32_t index)
 {
 	if(file_hd->fd == -1)return -1;
 	if(file_hd->file_size == 0)return -1;
@@ -89,7 +97,7 @@ int linear_file_delete(linear_file *file_hd, unsigned int index)
 	if((write(file_hd->fd, "\0", 1)) != 1)return -1;
 
 	(file_hd->file_size)--;//Don't "file_real_size--", because the real deletion didn't happen
-	return 0;
+	return OK;
 }
 
 int linear_file_add(linear_file *file_hd, const char *buf)
@@ -105,7 +113,7 @@ int linear_file_add(linear_file *file_hd, const char *buf)
 
 	if((lseek(file_hd->fd, 0, SEEK_SET)) == -1)return 1;
 	if((write(file_hd->fd, &(file_hd->file_real_size), sizeof(file_hd->file_real_size))) == -1)return 1;
-	return 0;
+	return OK;
 }
 
 int linear_file_clean(linear_file *file_hd)
@@ -175,5 +183,5 @@ int linear_file_clean(linear_file *file_hd)
 	if((lseek(file_hd->fd, 0, SEEK_SET)) == -1)return 8;//file_hd->fd isn't O_APPEND
 	if((write(file_hd->fd, &(file_hd->file_real_size), sizeof(file_hd->file_real_size))) == -1)return 9;
 	
-	return 0;
+	return OK;
 }
