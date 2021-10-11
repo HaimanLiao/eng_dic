@@ -100,7 +100,7 @@ int linear_file_delete(linear_file *file_hd, uint32_t index)
 	return OK;
 }
 
-int linear_file_add(linear_file *file_hd, const char *buf)
+int linear_file_append(linear_file *file_hd, const char *buf)
 {
 	if(file_hd->fd == -1)return -1;//if the file can be opened then it is linear file and has the head part
 
