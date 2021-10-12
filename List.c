@@ -2,13 +2,13 @@
 #include "List.h"
 #include <stdint.h>
 
-typedef int(*element_cmp)(char *, char *);
+typedef int(*element_cmp)(const char *, const char *);
 typedef int(*element_delete)(char *);
-typedef int(*element_qualify)(char *);
+typedef int(*element_qualify)(const char *);
 
 int List_init(List *list_hd)
 {
-	if(list_hd->ptr == NULL)return -1;
+	if(list_hd->ptr != NULL)return -1;
 
 	list_hd->ptr = (char *)malloc(list_hd->size);
 	memset(list_hd->ptr, 0, list_hd->size);//Implicitly assign the head part
@@ -75,7 +75,7 @@ int List_clean(List *list_hd, element_qualify is_qualify)
 
 	for(int i = 0; i < (list_hd->element_real_num); i++)
 	{
-		if(is_qualify(ptr2))
+		if(is_qualify(ptr2) == OK)
 		{
 			memcpy(ptr1, ptr2, list_hd->element_size);
 			ptr1 += (list_hd->element_size);

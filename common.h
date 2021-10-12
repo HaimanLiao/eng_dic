@@ -11,5 +11,11 @@
 #include <stdint.h>
 
 #define OK	0
+#define ERROR	-1
+
+#define GREEN	0
+#define YELLOW	1
+#define RED	2
+uint32_t exit_code = GREEN;
 
 #endif

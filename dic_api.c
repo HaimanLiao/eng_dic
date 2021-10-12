@@ -1,0 +1,221 @@
+#include "common.h"
+#include "List.h"
+#include "linear_file_operate.h"
+
+#define WORD_LEN	20	//The actual length is WORD_LEN - 1 = 19
+#define EXP_LEN		400	//5 * 400
+#define RESERVE_LEN	1000
+typedef struct Word{
+	char name[WORD_LEN];
+
+	char exp1[EXP_LEN];
+	char exp2[EXP_LEN];
+	char exp2[EXP_LEN];
+	char exp2[EXP_LEN];
+	char exp2[EXP_LEN];
+
+	char reserve[RESERVE_LEN];
+}word_content;		//Be aware of pack problem if you want to operate struct member by address
+#define DEFINITION	0
+#define EXP_NUM		5
+#define EXP_SENTENCE	200
+#define VOC_FILE	"voc.dic"
+linear_file voc_dic_hd = {-1, 16, sizeof(word_content), VOC_FILE, 0, 0, 0};
+linear_file *voc_dic = &voc_dic_hd;
+
+//char index_element[WORD_LEN];
+#define INDEX_FILE	"index.dic"
+linear_file index_dic_hd = {-1, 16, WORD_LEN, INDEX_FILE, 0, 0, 0};
+linear_file *index_dic = &index_dic_hd;
+
+#define RAM_SIZE	1000000
+//char list_element[WORD_LEN] = {0};
+List index_ram_hd = {NULL, 8, WORD_LEN, RAM_SIZE, 0};
+List *index_ram = &index_ram_hd;
+
+
+#define ELE_LOAD_NUM	100
+int dic_init(void)
+{
+	if(linear_file_init(voc_dic) == -1)
+	{
+		exit_code = RED;
+		return -1;
+	}
+	if(linear_file_init(index_dic) == -1)
+	{
+		exit_code = RED;
+		return -1;
+	}
+	if(List_init(index_ram) == -1)//If return OK, ptr is pointed to a ram initialized by 0
+	{
+		exit_code = YELLOW;
+		return -1;
+	}
+
+	char *ram_ptr = index_ram->ptr + index_ram->head_size;
+	int index = 0;
+	uint32_t ret = 0;
+	uint32_t tmp_int = ELE_LOAD_NUM * (index_ram->element_size);
+	while(index < (voc_dic->file_real_size))
+	{
+		ret = linear_file_read(index_dic, index, ram_ptr, ELE_LOAD_NUM);
+		if(ret == -1)
+		{
+			exit_code = YELLOW;
+			return -1;
+		}
+/*		
+		if((ret % WORD_LEN) != 0)//Belive "linear_file_read" can detect this error
+		{
+			exit_code = YELLOW;
+			return -1;
+		}
+ */
+		else if(ret < tmp_int)break;
+		else
+		{
+			index += ELE_LOAD_NUM;
+			ram_ptr += tmp_int;
+		}
+	}
+	index_ram->element_real_num = index_dic->file_real_size;
+	index_ram->element_num = index_ram->element_real_num;
+
+	return OK;
+}
+
+void index_ram_print(char *buf, uint32_t num)//Test fuction (Remove it when test is over)
+{
+	if(index_ram->ptr == NULL)return;
+
+	char *buf = index_ram->ptr + index_ram->head_size;
+	uint32_t tmp_int = (index_ram->element_real_num) * (index_ram->element_size);
+        for(int i = 0; i < tmp_int; i++)
+        {
+                if((i % 8) == 0)printf("\n");
+
+                if(buf[i] == '\0')printf(" \\0   ");
+                else if((((int)buf[i]) > 32) && (((int)buf[i]) < 127))printf("  %c   ", buf[i]);
+                else printf("0x%2x  ", buf[i]);
+        }
+        printf("\n");
+}
+
+int get_word_index(const char *name)
+{
+	return List_get_item_index(index_ram, name, strcmp);
+}
+
+int add_word(const char *buf)//buf is "word_content *" type
+{
+	char name[WORD_LEN];
+	memcpy(name, buf, WORD_LEN);
+
+	if(linear_file_append(voc_dic, buf) == -1)
+	{
+		exit_code = RED;
+		return -1;
+	}
+	if(linear_file_append(index_dic, name) == -1)
+	{
+		exit_code = RED;
+		return -1;
+	}
+	if(List_append_items(index_ram, name, 1) == -1)
+	{
+		exit_code = YELLOW;
+		return -1;
+	}
+
+	return OK;
+}
+
+void print_word_content(uint32_t index)
+{
+	char buf[sizeof(word_content)] = {0};
+
+	if(linear_file_read(voc_dic, index, buf, 1) == -1)
+	{
+		exti_code = YELLOW;
+		return;
+	}
+
+	char *print_ptr = buf;
+	printf("%s\n", print_ptr);
+
+	print_ptr += WORD_LEN;
+	for(int i = 0; i < EXP_NUM; i++)
+	{
+		printf("%s\n", print_ptr);
+		printf("%s\n", (print_ptr + DEFINITION));
+
+		print_ptr += WORD_LEN;
+	}
+}
+
+int de_qualify(char *element)//Private fuction
+{
+	element[0] = '\0';
+	return OK;
+}
+int delete_word(const char *name)
+{
+	int index;
+	if((index = get_word_index(name)) == -1)return -1;//word does't exist
+
+	if(linear_file_delete(voc_dic, index) == -1)
+	{
+		exit_code = RED;
+		return -1;
+	}
+	if(linear_file_delete(index_dic, index) == -1)
+	{
+		exit_code = RED;
+		return -1;
+	}
+	if(List_delete_item(index_ram, index, de_qualify) == -1)
+	{
+		exit_code = YELLOW;
+		return -1;
+	}
+
+	return OK;
+}
+
+int is_qualify(const char *buf)//Private function
+{
+	if(buf[0] == '\0')return -1;
+	else return OK;
+}
+int dic_clean(void)
+{
+	if(linear_file_clean(index_dic) == -1)
+	{
+		exit_code = RED;
+		return -1;
+	}
+	if(linear_file_clean(voc_dic) == -1)
+	{
+		exit_code = RED;
+		return -1;
+	}
+	if(List_clean(index_ram, is_qualify) == -1)
+	{
+		exit_code = YELLOW;
+		return -1;
+	}
+
+	return 0;
+}
+
+void dic_exit(void)
+{
+	List_uinit(index_ram);
+
+	close(index_dic->fd);
+	index_dic->fd = -1;
+
+	close(voc_dic->fd);
+	voc_dic->fd = -1;
+}
