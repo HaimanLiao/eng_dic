@@ -2,16 +2,14 @@
 #include "List.h"
 #include <stdint.h>
 
-typedef int(*element_cmp)(const char *, const char *);
-typedef int(*element_delete)(char *);
-typedef int(*element_qualify)(const char *);
-
 int List_init(List *list_hd)
 {
 	if(list_hd->ptr != NULL)return -1;
 
 	list_hd->ptr = (char *)malloc(list_hd->size);
 	memset(list_hd->ptr, 0, list_hd->size);//Implicitly assign the head part
+
+	return OK;
 }
 
 int List_get_item_num(List *list_hd, uint32_t flag)
@@ -31,18 +29,20 @@ int List_append_items(List *list_hd, char *buf, uint32_t num)
 
 	(list_hd->element_real_num) += num;
 	(list_hd->element_num) += num;
+
+	return 0;
 }
 
-int List_get_item_index(List *list_hd, char *name, element_cmp cmp)
+int List_get_item_index(List *list_hd, const char *name, element_cmp cmp)
 {
 	if(list_hd->ptr == NULL)return -1;
 
 	char *element_ptr = list_hd->ptr + list_hd->head_size;
 
-	for(int i = 0; i < list_hd->element_real_num; i++)
+	for(int i = 0; i < (list_hd->element_real_num); i++)
 	{
-		if(cmp(element_ptr, name) == 0)return i;
-		element_ptr += (list_hd->head_size);
+		if(cmp(element_ptr, name) == OK)return i;
+		element_ptr += (list_hd->element_size);
 	}
 
 	return -1;

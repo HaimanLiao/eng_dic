@@ -73,7 +73,7 @@ int linear_file_read(const linear_file *file_hd, uint32_t index, char *buf, uint
 	int ret = 0;
 	
 	if(file_hd->fd == -1)return -1;
-	if(num > (file_hd->file_real_size))return -1;
+	//if(num > (file_hd->file_real_size))return -1;
 	if(index >= (file_hd->file_real_size))return -1;
 
 	off_t new_offset = file_hd->head_size + index * (file_hd->element_size);

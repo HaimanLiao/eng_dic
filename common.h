@@ -16,6 +16,8 @@
 #define GREEN	0
 #define YELLOW	1
 #define RED	2
-uint32_t exit_code = GREEN;
+extern uint32_t exit_code;
+
+int str_input(char *buf, uint32_t num);
 
 #endif
