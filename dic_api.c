@@ -32,12 +32,22 @@ int dic_init(void)
 		exit_code = RED;
 		return -1;
 	}
+	if(linear_file_clean(index_dic) == -1)
+        {
+                exit_code = RED;
+                return -1;
+        }
+        if(linear_file_clean(voc_dic) == -1)
+        {
+                exit_code = RED;
+                return -1;
+        }
+
 	if(List_init(index_ram) == -1)//If return OK, ptr is pointed to a ram initialized by 0
 	{
 		exit_code = YELLOW;
 		return -1;
 	}
-
 	//Load the file index.dic to index_ram
 	char *ram_ptr = index_ram->ptr + index_ram->head_size;
 	int index = 0;
@@ -97,7 +107,9 @@ void list_words(void)
 
 	for(int i = 0; i < (index_ram->element_real_num); i++)
 	{
-		printf("# %s\n", ram_ptr);
+		if(ram_ptr[0] == '\0');
+		else printf("# %s\n", ram_ptr);
+
 		ram_ptr += (index_ram->element_size);
 	}
 }
@@ -215,10 +227,6 @@ int dic_clean(void)
 void dic_exit(void)
 {
 	List_uinit(index_ram);
-
-	close(index_dic->fd);
-	index_dic->fd = -1;
-
-	close(voc_dic->fd);
-	voc_dic->fd = -1;
+	linear_file_close(index_dic);
+	linear_file_close(voc_dic);
 }

@@ -25,5 +25,6 @@ int linear_file_read(const linear_file *file_hd, uint32_t index, char *buf, uint
 int linear_file_delete(linear_file *file_hd, uint32_t index);
 int linear_file_append(linear_file *file_hd, const char *buf);
 int linear_file_clean(linear_file *file_hd);
+void linear_file_close(linear_file *file_hd);
 
 #endif

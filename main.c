@@ -83,7 +83,7 @@ void search_command(const char *word)
 
 	if(index == -1)
 	{
-		printf("%s doesn't exist in dictionary file\n", word);
+		printf("#%s# doesn't exist in dictionary file\n", word);
 		return;
 	}
 
@@ -116,11 +116,12 @@ int main(void)
 	{
 		printf("Red Error\n");
 		//printf("%d\n", exit_code);
-		return -1;
+		//return -1;
+		goto end;
 	}
 
 	//index_ram_print();
-	if(dic_clean() == -1)goto end;
+	//if(dic_clean() == -1)goto end;//Clean in dic_init()
 
 start:
 	printf("Please input one of commands as follow:\n");

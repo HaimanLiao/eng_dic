@@ -185,3 +185,12 @@ int linear_file_clean(linear_file *file_hd)
 	
 	return OK;
 }
+
+void linear_file_close(linear_file *file_hd)
+{
+	if((file_hd->fd) != -1)
+	{
+		close(file_hd->fd);
+		file_hd->fd = -1;
+	}
+}

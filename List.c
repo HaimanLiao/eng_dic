@@ -65,6 +65,8 @@ int List_delete_item(List *list_hd, uint32_t index, element_delete de_qualify)
 
 int List_clean(List *list_hd, element_qualify is_qualify)
 {
+	if((list_hd->ptr) == NULL)return -1;
+	
 	char *new_ptr = malloc(list_hd->size);
 	memset(new_ptr, 0, list_hd->size);
 
@@ -73,12 +75,14 @@ int List_clean(List *list_hd, element_qualify is_qualify)
 	char *ptr1 = new_ptr + list_hd->head_size;
 	char *ptr2 = list_hd->ptr + list_hd->head_size;
 
+	(list_hd->element_num) = 0;
 	for(int i = 0; i < (list_hd->element_real_num); i++)
 	{
 		if(is_qualify(ptr2) == OK)
 		{
 			memcpy(ptr1, ptr2, list_hd->element_size);
 			ptr1 += (list_hd->element_size);
+			(list_hd->element_num)++;
 		}
 		ptr2 += (list_hd->element_size);
 	}
@@ -86,6 +90,11 @@ int List_clean(List *list_hd, element_qualify is_qualify)
 	free(list_hd->ptr);
 	list_hd->ptr = new_ptr;
 	list_hd->element_real_num = list_hd->element_num;
+	/*
+	   Although list_hd->element_num is changed and keeps updated in function List_delete, the
+	   initialization of it is where error could happen in case that linear file didn't clean.
+	   So clean fuction needs to make sure list_hd->element_num is right even linear_file didn't clean.
+	*/
 
 	return OK;
 }
