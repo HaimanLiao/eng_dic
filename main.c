@@ -26,10 +26,16 @@ void Print_word_content(const char *print_ptr)
         print_ptr += WORD_LEN;
         for(int i = 0; i < EXP_NUM; i++)
         {
-                if(print_ptr[0] == '\0')break;
-
-		printf("%s\n", print_ptr);
-                printf("\t$ %s\n", (print_ptr + SENTENCE_START));
+		if(print_ptr[0] == '\0')
+		{
+			if((print_ptr + SENTENCE_START)[0] == '\0')return;
+			printf("\t$ %s\n", (print_ptr + SENTENCE_START));//some words may not have definition but have example sentence
+		}
+		else
+		{
+			printf("%s\n", print_ptr);
+                	printf("\t$ %s\n", (print_ptr + SENTENCE_START));
+		}
 
                 print_ptr += EXP_LEN;
         }
@@ -124,7 +130,7 @@ int main(void)
 	//if(dic_clean() == -1)goto end;//Clean in dic_init()
 
 start:
-	printf("Please input one of commands as follow:\n");
+	printf("\nPlease input one of commands as follow:\n");
 	printf("\tsearch [enter] [word]\n");
 	printf("\tadd [enter] [word]\n");
 	printf("\tdelete [enter] [word]\n");

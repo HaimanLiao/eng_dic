@@ -160,10 +160,16 @@ void print_word_content(uint32_t index)
         print_ptr += WORD_LEN;
         for(int i = 0; i < EXP_NUM; i++)
         {
-                if(print_ptr[0] == '\0')break;
-
-                printf("%s\n", print_ptr);
-                printf("\t$ %s\n", (print_ptr + SENTENCE_START));
+                if(print_ptr[0] == '\0')
+                {
+                        if((print_ptr + SENTENCE_START)[0] == '\0')return;
+                        printf("\t$ %s\n", (print_ptr + SENTENCE_START));//some words may not have definition but have example sentence
+                }
+                else
+                {
+                        printf("%s\n", print_ptr);
+                        printf("\t$ %s\n", (print_ptr + SENTENCE_START));
+                }
 
                 print_ptr += EXP_LEN;
         }
