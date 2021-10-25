@@ -59,7 +59,7 @@ void add_command(const char *word)
         voc_element_ptr += WORD_LEN;
         for(int i = 0; i < EXP_NUM; i++)
         {
-                printf("Please input #%s# definition %d:\n", word, i + 1);
+                printf("Please input #%s# definition %d(\"Ctrl + F\" to finish input & \"Ctrl + X\" to cancel input):\n", word, i + 1);
                 str_input(voc_element_ptr, SENTENCE_START - 1);//Leave the room for '\0'
 		
 		if(voc_element_ptr[0] == CTRL_PLUS_F)
@@ -73,7 +73,7 @@ void add_command(const char *word)
 			return;
 		}
 
-                printf("Please input #%s# example sentence %d:\n", word, i + 1);
+                printf("Please input #%s# example sentence %d(\"Ctrl + F\" to finish input & \"Ctrl + X\" to cancel input):\n", word, i + 1);
                 str_input(voc_element_ptr + SENTENCE_START, EXP_LEN - SENTENCE_START - 1);//Also leave the room for '\0'
 
                 if((voc_element_ptr + SENTENCE_START)[0] == CTRL_PLUS_F)
