@@ -131,7 +131,17 @@ void delete_command(const char *word)
 
 void list_command(void)
 {
+	int tmp_int1 = get_word_num(0);
+	//int tmp_int2 = get_word_num(1);
+
+	printf("total words: %d\n", tmp_int1);
+	//printf("total real words: %d\n", tmp_int2);
+
 	list_words();
+
+        printf("total words: %d\n", tmp_int1);
+        //printf("total real words: %d\n", tmp_int2);
+
 }
 
 void quit_command(void)

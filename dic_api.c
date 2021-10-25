@@ -114,6 +114,12 @@ void list_words(void)
 	}
 }
 
+int get_word_num(uint32_t flag)
+{
+	if(flag == 0)return index_ram->element_num;
+	else return index_ram->element_real_num;
+}
+
 int get_word_index(const char *name)
 {
 	return List_get_item_index(index_ram, name, strcmp);

@@ -29,5 +29,6 @@ int delete_word(const char *name);
 void list_words(void);
 int dic_clean(void);
 void dic_exit(void);
+int get_word_num(uint32_t flag);
 
 #endif
