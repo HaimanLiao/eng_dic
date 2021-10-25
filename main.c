@@ -61,8 +61,31 @@ void add_command(const char *word)
         {
                 printf("Please input #%s# definition %d:\n", word, i + 1);
                 str_input(voc_element_ptr, SENTENCE_START - 1);//Leave the room for '\0'
+		
+		if(voc_element_ptr[0] == CTRL_PLUS_F)
+		{
+			voc_element_ptr[0] = '\0';
+			break;
+		}
+		if(voc_element_ptr[0] == CTRL_PLUS_X)
+		{
+			free(voc_element);
+			return;
+		}
+
                 printf("Please input #%s# example sentence %d:\n", word, i + 1);
                 str_input(voc_element_ptr + SENTENCE_START, EXP_LEN - SENTENCE_START - 1);//Also leave the room for '\0'
+
+                if((voc_element_ptr + SENTENCE_START)[0] == CTRL_PLUS_F)
+                {
+			(voc_element_ptr + SENTENCE_START)[0] = '\0';
+                        break;
+                }
+                if((voc_element_ptr + SENTENCE_START)[0] == CTRL_PLUS_X)
+                {
+                        free(voc_element);
+                        return;
+                }
 
                 voc_element_ptr += EXP_LEN;
         }
